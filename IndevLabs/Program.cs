@@ -1,4 +1,10 @@
+using IndevLabs.Extensions;
+using IndevLabs.Models;
+
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddDbContext<IndevLabsDbContext>();
 
 // Add services to the container.
 
@@ -8,6 +14,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.MigrateDatabase<IndevLabsDbContext>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

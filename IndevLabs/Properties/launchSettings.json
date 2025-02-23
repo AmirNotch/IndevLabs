@@ -16,7 +16,8 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5066",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PG_CONNECTION" : "Host=localhost;Port=5433;Database=IndevLabs_db;User Id=postgres;Password=810947"
       }
     },
     "https": {
