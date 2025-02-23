@@ -9,4 +9,7 @@ public interface IWineRepository
     Task CreateWine(Wine wine, CancellationToken ct);
     Task UpdateWine(Wine wine, CancellationToken ct);
     Task DeleteWine(int wineId, CancellationToken ct);
+    
+    Task<bool> WineExists(int wineId, CancellationToken ct);
+    Task<Wine?> GetByIdOptional(int wineId, CancellationToken ct);
 }

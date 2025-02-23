@@ -10,6 +10,12 @@ public class WineRepository : IWineRepository
     private readonly ILogger<WineRepository> _logger;
     private readonly IndevLabsDbContext _dbContext;
 
+    public WineRepository(IndevLabsDbContext dbContext, ILogger<WineRepository> logger)
+    {
+        _dbContext = dbContext;
+        _logger = logger;
+    }
+    
     public async Task<IEnumerable<Wine>> GetWines(CancellationToken ct)
     {
         return await _dbContext.Wines.OrderBy(x => x.Year).ToListAsync(ct);
@@ -45,5 +51,16 @@ public class WineRepository : IWineRepository
         await _dbContext.Wines
             .Where(i => i.Id == wineId)
             .ExecuteDeleteAsync(ct);
+    }
+
+    public async Task<bool> WineExists(int wineId, CancellationToken ct)
+    {
+        Wine? wine = await GetByIdOptional(wineId, ct);
+        return wine != null;
+    }
+
+    public async Task<Wine?> GetByIdOptional(int wineId, CancellationToken ct)
+    {
+        return await _dbContext.Wines.FindAsync(wineId, ct);
     }
 }

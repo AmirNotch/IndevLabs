@@ -2,6 +2,7 @@
 using IndevLabs.Models.db;
 using IndevLabs.Models.Wines;
 using IndevLabs.Repository.Interface;
+using IndevLabs.Util;
 using IndevLabs.Validation;
 
 namespace IndevLabs.Service;
@@ -12,8 +13,7 @@ public class WineService
     private readonly IValidationStorage _validationStorage;
     private readonly IWineRepository _wineRepository;
     private readonly IMapper _mapper;
-
-
+    
     public WineService(ILogger<WineService> logger, IValidationStorage validationStorage,
         IWineRepository wineRepository, IMapper mapper)
     {
@@ -34,6 +34,11 @@ public class WineService
     
     public async Task<WineDto> GetWineById(int id, CancellationToken ct)
     {
+        bool isValid = await ValidateGetWineById(id, ct);
+        if (!isValid)
+        {
+            return null!;
+        }
         Wine wine = await _wineRepository.GetWineById(id, ct);
         var wineDto = _mapper.Map<WineDto>(wine);
         return wineDto;
@@ -41,12 +46,6 @@ public class WineService
     
     public async Task<bool> CreateWine(WineDto wineDto, CancellationToken ct)
     {
-        bool isValid = await CreateItemValidation(itemRequest.UnrealId, ct);
-        if (!isValid)
-        {
-            return false;
-        }
-        
         var wine = new Wine()
         {
             Title = wineDto.Title,
@@ -60,7 +59,7 @@ public class WineService
     
     public async Task<bool> UpdateWine(Wine wine, CancellationToken ct)
     {
-        bool isValid = await UpdateItemValidation(updateItemRequest, ct);
+        bool isValid = await ValidateUpdateWine(wine, ct);
         if (!isValid)
         {
             return false;
@@ -72,7 +71,7 @@ public class WineService
     
     public async Task<bool> DeleteWine(int wineId, CancellationToken ct)
     {
-        bool isValid = await DeleteItemValidate(wineId, ct);
+        bool isValid = await ValidateDeleteWine(wineId, ct);
         if (!isValid)
         {
             return false;
@@ -86,6 +85,34 @@ public class WineService
     
     #region Validation
     
+    public async Task<bool> ValidateGetWineById(int id, CancellationToken ct)
+    {
+        if (!await _wineRepository.WineExists(id, ct))
+        {
+            ValidationUtils.AddUnknownWineError(_validationStorage, id);
+        }
+        return _validationStorage.IsValid;
+    }
+    
+    public async Task<bool> ValidateUpdateWine(Wine wine, CancellationToken ct)
+    {
+        var item = await _wineRepository.GetByIdOptional(wine.Id, ct);
+        if (item == null)
+        {
+            ValidationUtils.AddUnknownWineError(_validationStorage, wine.Id);
+            return false;
+        }
+        return _validationStorage.IsValid;
+    }
+    
+    public async Task<bool> ValidateDeleteWine(int id, CancellationToken ct)
+    {
+        if (!await _wineRepository.WineExists(id, ct))
+        {
+            ValidationUtils.AddUnknownWineError(_validationStorage, id);
+        }
+        return _validationStorage.IsValid;
+    }
     
     #endregion
 }

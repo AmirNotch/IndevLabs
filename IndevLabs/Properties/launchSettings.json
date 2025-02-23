@@ -17,7 +17,9 @@
       "applicationUrl": "http://localhost:5066",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "PG_CONNECTION" : "Host=localhost;Port=5433;Database=IndevLabs_db;User Id=postgres;Password=810947"
+        "PG_CONNECTION" : "Host=localhost;Port=5433;Database=IndevLabs_db;User Id=postgres;Password=810947",
+        "Username": "admin",
+        "PasswordHash": "$2a$11$X0BrGPt.7Fo926QO3k/cgeP41CyZpQqn9UYU7rFUxvSUwamnt5VwO"
       }
     },
     "https": {
